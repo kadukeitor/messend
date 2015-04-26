@@ -27,25 +27,16 @@
 		}
 
 		function register( $server, $user ) {
-
-
 			if ( $this->mapper->count( array( 'server=? AND user=?', $server, $user ) ) ) {
-
 				$this->mapper->load( array( 'server=? AND user=?', $server, $user ) );
-
-
 			} else {
-
 				$this->mapper->key    = bin2hex( openssl_random_pseudo_bytes( 8 ) );
 				$this->mapper->server = $server;
 				$this->mapper->user   = $user;
 				$this->mapper->save();
-
 			}
 
-
 			return $this->mapper->cast();
-
 		}
 
 	}

@@ -34,7 +34,7 @@ def send_message(message):
         f = urllib.urlopen(server + "/message?%s" % params)
         response = json.loads(f.read())
         if response.get('id'):
-            print "Message Stored (" + response.get('message') + ")"
+            print "Message Saved (" + response.get('message') + ")"
     except:
         print "Error saving the Message"
         exit()
@@ -54,7 +54,6 @@ if __name__ == "__main__":
         server = config.get('global', 'server')
         key = config.get('global', 'key')
     except:
-        print
         print "Welcome to MesSend"
         print "------------------"
         print "Before anything you need define the server"
@@ -67,9 +66,14 @@ if __name__ == "__main__":
         config.set('global', 'key', key)
         with open(config_path, 'wb') as configfile:
             config.write(configfile)
+        print
+        print "Configuration Success"
+        print "You can change the configuration on '~/.messend.conf'"
+        print
 
     if len(args) > 0:
         send_message(args[0])
     else:
-        print "The message is required."
-        print "$ messend [message]"
+        print "The message is required"
+        print "Syntax:"
+        print "    $ messend \"[message]\""

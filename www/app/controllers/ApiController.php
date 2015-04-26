@@ -44,7 +44,11 @@
 
 			$message_model = new MessageModel();
 
-			$response = $message_model->add( $key, $message );
+			try {
+				$response = $message_model->add( $key, $message );
+			} catch ( \Exception $e ) {
+				$response = array( 'error' => 'Invalid Key' );
+			};
 
 			header( 'Content-type: application/json' );
 			echo json_encode( $response );
