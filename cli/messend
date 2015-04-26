@@ -1,0 +1,62 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import json
+import urllib
+import socket
+import getpass
+import ConfigParser
+from optparse import OptionParser
+
+
+def send_message(message):
+    # User and Host
+    host = socket.gethostname()
+    user = getpass.getuser()
+    # Register if not exist
+    params = urllib.urlencode({'user': user, 'server': host})
+    f = urllib.urlopen(server + "/register?%s" % params)
+    response = json.loads(f.read())
+    # Get key
+    key = response.get('key')
+    # Send Message
+    params = urllib.urlencode({'key': key, 'message': message})
+    f = urllib.urlopen(server + "/message?%s" % params)
+    # Confirmation
+    response = json.loads(f.read())
+    if response.get('id'):
+        print "Message Stored (" + response.get('message') + ")"
+
+
+if __name__ == "__main__":
+
+    option_parser = OptionParser()
+    opts, args = option_parser.parse_args()
+
+    config_path = os.path.expanduser("~") + '/.messend.conf'
+
+    config = ConfigParser.RawConfigParser()
+    config.read(config_path)
+
+    try:
+        server = config.get('global', 'server')
+    except:
+        print
+        print "Welcome to MesSend"
+        print "------------------"
+        print "Before anything you need define the server"
+        print "Where the messages will be stored"
+        print
+        sever = raw_input("Server: ")
+        config.add_section('global')
+        config.set('global', 'server', sever)
+        with open(config_path, 'wb') as configfile:
+            config.write(configfile)
+
+    # Run the script
+    if len(args) > 0:
+        send_message(args[0])
+    else:
+        print "The message is required."
+        print "$ messend [message]"
