@@ -6,7 +6,7 @@
 	use models\ServerModel;
 
 	/**
-	 * Class MainController
+	 * Class ApiController
 	 * @package controllers
 	 */
 	class ApiController {
