@@ -10,23 +10,34 @@ import ConfigParser
 from optparse import OptionParser
 
 
-def send_message(message):
-    # User and Host
+def get_server():
+    return raw_input("Server: ")
+
+
+def get_key():
     host = socket.gethostname()
     user = getpass.getuser()
-    # Register if not exist
     params = urllib.urlencode({'user': user, 'server': host})
-    f = urllib.urlopen(server + "/register?%s" % params)
-    response = json.loads(f.read())
-    # Get key
-    key = response.get('key')
-    # Send Message
+    try:
+        f = urllib.urlopen(server + "/register?%s" % params)
+        response = json.loads(f.read())
+        return response.get('key')
+    except:
+        print
+        print "Invalid Server"
+        exit()
+
+
+def send_message(message):
     params = urllib.urlencode({'key': key, 'message': message})
-    f = urllib.urlopen(server + "/message?%s" % params)
-    # Confirmation
-    response = json.loads(f.read())
-    if response.get('id'):
-        print "Message Stored (" + response.get('message') + ")"
+    try:
+        f = urllib.urlopen(server + "/message?%s" % params)
+        response = json.loads(f.read())
+        if response.get('id'):
+            print "Message Stored (" + response.get('message') + ")"
+    except:
+        print "Error saving the Message"
+        exit()
 
 
 if __name__ == "__main__":
@@ -41,6 +52,7 @@ if __name__ == "__main__":
 
     try:
         server = config.get('global', 'server')
+        key = config.get('global', 'key')
     except:
         print
         print "Welcome to MesSend"
@@ -48,13 +60,14 @@ if __name__ == "__main__":
         print "Before anything you need define the server"
         print "Where the messages will be stored"
         print
-        sever = raw_input("Server: ")
         config.add_section('global')
-        config.set('global', 'server', sever)
+        server = get_server()
+        config.set('global', 'server', server)
+        key = get_key()
+        config.set('global', 'key', key)
         with open(config_path, 'wb') as configfile:
             config.write(configfile)
 
-    # Run the script
     if len(args) > 0:
         send_message(args[0])
     else:
