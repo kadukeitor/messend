@@ -1,8 +1,16 @@
 # MesSend
 
+Light system to store user's custom operations.
+
 ## CLI
 
 To install copy the `messend` file to `/usr/bin`.
+
+The config is located on `~/.messend.conf`
+
+### Use
+
+Simply  `$ messend`
 
 ## WWW
 
