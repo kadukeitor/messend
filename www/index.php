@@ -85,11 +85,11 @@
 			} else {
 
 				// Insert the Message
-				$messages           = new DB\Jig\Mapper( $f3->get( 'DB' ), 'messages' );
+				$messages           = new DB\Jig\Mapper( $f3->get( 'DB' ), 'messages_' . $sessions->server );
 				$messages->session  = $key;
 				$messages->server   = $sessions->server;
 				$messages->user     = $sessions->user;
-				$messages->datetime = date("Y-m-d H:i:s");
+				$messages->datetime = date( "Y-m-d H:i:s" );
 				$messages->message  = $message;
 				$messages->insert();
 
@@ -134,7 +134,7 @@
 				$server = $sessions->server;
 
 				// Return all Messages for the Server
-				$messages = new DB\Jig\Mapper( $f3->get( 'DB' ), 'messages' );
+				$messages = new DB\Jig\Mapper( $f3->get( 'DB' ), 'messages_' . $server );
 				$response = [ ];
 				foreach (
 					$messages->find( array(
@@ -151,6 +151,52 @@
 			// Return Session
 			header( 'Content-type: application/json' );
 			echo json_encode( $response );
+
+		}
+	);
+
+	$f3->route( 'GET /test',
+		/**
+		 * Test the System ( inserting 10000 messages ).
+		 * The parameters key is required.
+		 *
+		 * @param Base $f3
+		 */
+		function ( \Base $f3 ) {
+
+			$request = $f3->get( 'REQUEST' );
+			$f3->scrub( $request );
+
+			// Get Parameters
+			$key = isset( $request['key'] ) ? $request['key'] : 'unknow';
+
+			// Check key
+			$sessions = new DB\Jig\Mapper( $f3->get( 'DB' ), 'sessions' );
+
+			if ( ! $sessions->load( array( '@_id=?', $key ) ) ) {
+
+				// Error Response
+				$response = array( "error" => "The key is invalid" );
+
+			} else {
+
+				// Insert the Messages
+				$messages = new DB\Jig\Mapper( $f3->get( 'DB' ), 'messages_' . $sessions->server );
+				for ( $i = 0; $i < 10000; $i ++ ) {
+
+					$web = new Web();
+
+					$messages->reset();
+					$messages->session  = $key;
+					$messages->server   = $sessions->server;
+					$messages->user     = $sessions->user;
+					$messages->datetime = date( "Y-m-d H:i:s" );
+					$messages->message  = $web->filler( 1, 5, false );
+					$messages->insert();
+				}
+
+			}
+
 
 		}
 	);

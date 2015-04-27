@@ -10,7 +10,7 @@ import ConfigParser
 from optparse import OptionParser
 
 
-class bcolors:
+class BColors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -20,13 +20,32 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+    def __init__(self, show_colors):
+        if show_colors == "False":
+            self.HEADER = ''
+            self.OKBLUE = ''
+            self.OKGREEN = ''
+            self.WARNING = ''
+            self.FAIL = ''
+            self.ENDC = ''
+            self.BOLD = ''
+            self.UNDERLINE = ''
+
 
 def get_server():
     return raw_input("Server: ")
 
 
+def get_host():
+    default = socket.gethostname()
+    host_input = raw_input("Hostname[" + default + "]: ")
+    if not host_input:
+        return default
+    else:
+        return host_input
+
+
 def get_key():
-    host = socket.gethostname()
     user = getpass.getuser()
     params = urllib.urlencode({'user': user, 'server': host})
     try:
@@ -57,13 +76,15 @@ def get_info():
     print bcolors.OKGREEN + bcolors.BOLD + "Configuration" + bcolors.ENDC
     print "server : " + server
     print "key    : " + key
+    print "host   : " + host
+    print "color  : " + color
 
 
 def do_delete():
     confirmation = raw_input("Are you sure [yes]: ")
     if confirmation == "yes":
         os.remove(config_path)
-        print "Configuration removed"
+        print "Configuration deleted"
     else:
         print "Operation canceled"
 
@@ -91,19 +112,27 @@ if __name__ == "__main__":
     config = ConfigParser.RawConfigParser()
     config.read(config_path)
 
+    bcolors = BColors(True)
+
     try:
         server = config.get('global', 'server')
         key = config.get('global', 'key')
+        host = config.get('global', 'host')
+        color = config.get('global', 'color')
+        bcolors = BColors(color)
     except:
         print bcolors.OKBLUE + bcolors.BOLD + "Welcome to MesSend" + bcolors.ENDC
-        print "Before anything you need define the server"
-        print "Where the messages will be saved"
+        print "Before anything you need define the Name to identify this Hostname "
+        print "And the URL of the server where the messages will be saved"
         print
         config.add_section('global')
+        host = get_host()
+        config.set('global', 'host', host)
         server = get_server()
         config.set('global', 'server', server)
         key = get_key()
         config.set('global', 'key', key)
+        config.set('global', 'color', True)
         with open(config_path, 'wb') as configfile:
             config.write(configfile)
         print
@@ -125,10 +154,10 @@ if __name__ == "__main__":
         print bcolors.FAIL + bcolors.BOLD + "The message is required" + bcolors.ENDC
         print "Syntax:"
         print "    $ messend \"[message]\""
-        print "Internal Messages:"
+        print "Reserved Messages:"
         print "    $ messend status"
-        print "         (Get information from the server)"
+        print "         (Get status from the server)"
         print "    $ messend info"
-        print "         (Show configuration)"
+        print "         (Show the configuration)"
         print "    $ messend delete"
-        print "         (Remove configuration)"
+        print "         (Delete the configuration)"
