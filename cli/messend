@@ -35,9 +35,10 @@ def send_message(message):
         response = json.loads(f.read())
         if response.get('id'):
             print "Message Saved (" + response.get('message') + ")"
+        else:
+            print "Error saving the Message"
     except:
         print "Error saving the Message"
-        exit()
 
 
 if __name__ == "__main__":
