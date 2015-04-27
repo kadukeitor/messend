@@ -140,7 +140,7 @@
 					$messages->find( array(
 						'@server=?',
 						$server
-					), array( 'order' => 'datetime SORT_DESC', 'limit' => 10 ) ) as $message
+					), array( 'order' => 'datetime SORT_DESC', 'limit' => 20 ) ) as $message
 				) {
 					unset( $message->session );
 					$response[] = $message->cast();

@@ -50,11 +50,22 @@ def get_status():
                 'user') + bcolors.ENDC + " " + message.get(
                 'message')
     except:
-        print bcolors.FAIL + bcolors.BOLD + "Error retrieving the Message" + bcolors.ENDC
+        print bcolors.FAIL + bcolors.BOLD + "Error retrieving the Information" + bcolors.ENDC
+
+
+def get_info():
+    print bcolors.OKGREEN + bcolors.BOLD + "Configuration" + bcolors.ENDC
+    print "server : " + server
+    print "key    : " + key
 
 
 def do_delete():
-    os.remove(config_path)
+    confirmation = raw_input("Are you sure [yes]: ")
+    if confirmation == "yes":
+        os.remove(config_path)
+        print "Configuration removed"
+    else:
+        print "Operation canceled"
 
 
 def send_message(message):
@@ -104,6 +115,8 @@ if __name__ == "__main__":
     if len(args) > 0:
         if args[0] == 'status':
             get_status()
+        elif args[0] == 'info':
+            get_info()
         elif args[0] == 'delete':
             do_delete()
         else:
@@ -114,6 +127,8 @@ if __name__ == "__main__":
         print "    $ messend \"[message]\""
         print "Internal Messages:"
         print "    $ messend status"
-        print "         (Show information)"
+        print "         (Get information from the server)"
+        print "    $ messend info"
+        print "         (Show configuration)"
         print "    $ messend delete"
         print "         (Remove configuration)"
