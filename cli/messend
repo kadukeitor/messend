@@ -10,6 +10,17 @@ import ConfigParser
 from optparse import OptionParser
 
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def get_server():
     return raw_input("Server: ")
 
@@ -21,11 +32,29 @@ def get_key():
     try:
         f = urllib.urlopen(server + "/register?%s" % params)
         response = json.loads(f.read())
-        return response.get('key')
+        return response.get('_id')
     except:
         print
-        print "Invalid Server"
+        print bcolors.FAIL + bcolors.BOLD + "Invalid Server" + bcolors.ENDC
         exit()
+
+
+def get_status():
+    params = urllib.urlencode({'key': key})
+    try:
+        f = urllib.urlopen(server + "/status?%s" % params)
+        response = json.loads(f.read())
+        print bcolors.OKGREEN + bcolors.BOLD + "Last Messages" + bcolors.ENDC
+        for message in response:
+            print message.get('datetime') + " " + bcolors.OKGREEN + message.get(
+                'user') + bcolors.ENDC + " " + message.get(
+                'message')
+    except:
+        print bcolors.FAIL + bcolors.BOLD + "Error retrieving the Message" + bcolors.ENDC
+
+
+def do_delete():
+    os.remove(config_path)
 
 
 def send_message(message):
@@ -33,12 +62,12 @@ def send_message(message):
     try:
         f = urllib.urlopen(server + "/message?%s" % params)
         response = json.loads(f.read())
-        if response.get('id'):
-            print "Message Saved (" + response.get('message') + ")"
+        if response.get('_id'):
+            print bcolors.OKGREEN + bcolors.BOLD + "Message Saved > " + bcolors.ENDC + response.get('message')
         else:
-            print "Error saving the Message"
+            print bcolors.FAIL + bcolors.BOLD + "Invalid Key" + bcolors.ENDC
     except:
-        print "Error saving the Message"
+        print bcolors.FAIL + bcolors.BOLD + "Error saving the Message" + bcolors.ENDC
 
 
 if __name__ == "__main__":
@@ -55,10 +84,9 @@ if __name__ == "__main__":
         server = config.get('global', 'server')
         key = config.get('global', 'key')
     except:
-        print "Welcome to MesSend"
-        print "------------------"
+        print bcolors.OKBLUE + bcolors.BOLD + "Welcome to MesSend" + bcolors.ENDC
         print "Before anything you need define the server"
-        print "Where the messages will be stored"
+        print "Where the messages will be saved"
         print
         config.add_section('global')
         server = get_server()
@@ -68,13 +96,24 @@ if __name__ == "__main__":
         with open(config_path, 'wb') as configfile:
             config.write(configfile)
         print
-        print "Configuration Success"
+        print bcolors.OKGREEN + bcolors.BOLD + "Configuration Success" + bcolors.ENDC
         print "You can change the configuration on '~/.messend.conf'"
         print
+        exit()
 
     if len(args) > 0:
-        send_message(args[0])
+        if args[0] == 'status':
+            get_status()
+        elif args[0] == 'delete':
+            do_delete()
+        else:
+            send_message(args[0])
     else:
-        print "The message is required"
+        print bcolors.FAIL + bcolors.BOLD + "The message is required" + bcolors.ENDC
         print "Syntax:"
         print "    $ messend \"[message]\""
+        print "Internal Messages:"
+        print "    $ messend status"
+        print "         (Show information)"
+        print "    $ messend delete"
+        print "         (Remove configuration)"
