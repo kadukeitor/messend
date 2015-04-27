@@ -153,11 +153,11 @@ if __name__ == "__main__":
     else:
         print bcolors.FAIL + bcolors.BOLD + "The message is required" + bcolors.ENDC
         print "Syntax:"
-        print "    $ messend \"[message]\""
+        print "    $ recho \"[message]\""
         print "Reserved Messages:"
-        print "    $ messend status"
+        print "    $ recho status"
         print "         (Get status from the server)"
-        print "    $ messend info"
+        print "    $ recho info"
         print "         (Show the configuration)"
-        print "    $ messend delete"
+        print "    $ recho delete"
         print "         (Delete the configuration)"

@@ -1,3 +1,4 @@
 .idea
-www/data/
-www/app/config.ini
+www/data/db
+www/data/cache
+www/data/errors.log
