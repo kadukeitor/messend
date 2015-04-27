@@ -13,7 +13,7 @@
 		 * @param Base $f3
 		 */
 		function ( \Base $f3 ) {
-			echo "<code>MesSend</code>";
+			echo "<code>recho</code>";
 		}
 	);
 

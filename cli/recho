@@ -107,7 +107,7 @@ if __name__ == "__main__":
     option_parser = OptionParser()
     opts, args = option_parser.parse_args()
 
-    config_path = os.path.expanduser("~") + '/.messend.conf'
+    config_path = os.path.expanduser("~") + '/.recho.conf'
 
     config = ConfigParser.RawConfigParser()
     config.read(config_path)
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         color = config.get('global', 'color')
         bcolors = BColors(color)
     except:
-        print bcolors.OKBLUE + bcolors.BOLD + "Welcome to MesSend" + bcolors.ENDC
+        print bcolors.OKBLUE + bcolors.BOLD + "Welcome to RECHO" + bcolors.ENDC
         print "Before anything you need define the Name to identify this Hostname "
         print "And the URL of the server where the messages will be saved"
         print
@@ -137,7 +137,7 @@ if __name__ == "__main__":
             config.write(configfile)
         print
         print bcolors.OKGREEN + bcolors.BOLD + "Configuration Success" + bcolors.ENDC
-        print "You can change the configuration on '~/.messend.conf'"
+        print "You can change the configuration on '~/.recho.conf'"
         print
         exit()
 

@@ -1,16 +1,16 @@
-# MesSend
+# recho
 
 Light system to store user's custom operations.
 
 ## CLI
 
-To install copy the `messend` file to `/usr/bin`.
+To install copy the `recho` file to `/usr/bin`.
 
-The config is located on `~/.messend.conf`
+The config is located on `~/.recho.conf`
 
 ### Use
 
-Simply  `$ messend`
+Simply  `$ recho`
 
 ## WWW
 
