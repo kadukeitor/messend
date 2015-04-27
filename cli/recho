@@ -37,12 +37,7 @@ def get_server():
 
 
 def get_host():
-    default = socket.gethostname()
-    host_input = raw_input("Hostname[" + default + "]: ")
-    if not host_input:
-        return default
-    else:
-        return host_input
+    return socket.gethostname()
 
 
 def get_key():
@@ -122,8 +117,8 @@ if __name__ == "__main__":
         bcolors = BColors(color)
     except:
         print bcolors.OKBLUE + bcolors.BOLD + "Welcome to RECHO" + bcolors.ENDC
-        print "Before anything you need define the Name to identify this Hostname "
-        print "And the URL of the server where the messages will be saved"
+        print "Before anything you need define :"
+        print " - The URL of the Server where the messages will be saved."
         print
         config.add_section('global')
         host = get_host()
