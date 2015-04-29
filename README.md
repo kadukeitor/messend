@@ -1,6 +1,6 @@
 # recho
 
-Light system to make RemoteECHO ( store messages in the cloud ).
+Light CLI system to store MESSAGES.
 
 ## CLI
 
@@ -10,7 +10,7 @@ The config is located on `~/.recho.conf`
 
 ### Use
 
-Simply  `$ recho "Installing Apache2"`
+Simply  `$ recho -m "Installing Apache2"`
 
 ## WWW
 

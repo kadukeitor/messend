@@ -106,6 +106,57 @@
 		}
 	);
 
+	$f3->route( 'GET /delete',
+		/**
+		 * Delete a Message
+		 * The parameters key and id are required.
+		 *
+		 * @param Base $f3
+		 */
+		function ( \Base $f3 ) {
+
+			$request = $f3->get( 'REQUEST' );
+			$f3->scrub( $request );
+
+			// Get Parameters
+			$key = isset( $request['key'] ) ? $request['key'] : 'unknow';
+			$id  = isset( $request['id'] ) ? $request['id'] : '';
+
+			// Check key
+			$sessions = new DB\Jig\Mapper( $f3->get( 'DB' ), 'sessions' );
+
+			if ( ! $sessions->load( array( '@_id=?', $key ) ) ) {
+
+				// Error Response
+				$response = array( "status" => "error", "error" => "The key is invalid" );
+
+			} else {
+
+				$messages = new DB\Jig\Mapper( $f3->get( 'DB' ), 'messages_' . $sessions->server );
+
+				if ( $messages->load( array( '@_id=?', $id ) ) ) {
+
+					// Erase the Message
+					$messages->erase( array( '@_id=?', $id ) );
+
+					$response = array( "status" => "success" );
+
+				} else {
+
+					// Error Response
+					$response = array( "status" => "error", "error" => "The Message is invalid" );
+
+				}
+
+			}
+
+			// Return the Message
+			header( 'Content-type: application/json' );
+			echo json_encode( $response );
+
+		}
+	);
+
 	$f3->route( 'GET /status',
 		/**
 		 * All messages for the Server

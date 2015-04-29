@@ -7,40 +7,18 @@ import urllib
 import socket
 import getpass
 import ConfigParser
-from optparse import OptionParser
-
-
-class BColors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-    def __init__(self, show_colors):
-        if show_colors == "False":
-            self.HEADER = ''
-            self.OKBLUE = ''
-            self.OKGREEN = ''
-            self.WARNING = ''
-            self.FAIL = ''
-            self.ENDC = ''
-            self.BOLD = ''
-            self.UNDERLINE = ''
+import argparse
 
 
 def get_server():
-    return raw_input("Server: ")
+    return raw_input("server: ")
 
 
 def get_host():
     return socket.gethostname()
 
 
-def get_key():
+def get_key(server, host):
     user = getpass.getuser()
     params = urllib.urlencode({'user': user, 'server': host})
     try:
@@ -49,39 +27,76 @@ def get_key():
         return response.get('_id')
     except:
         print
-        print bcolors.FAIL + bcolors.BOLD + "Invalid Server" + bcolors.ENDC
+        print "error: invalid server"
         exit()
 
 
-def get_status():
+def show_wizard():
+    print "Welcome to RECHO"
+    print "Before anything you need define :"
+    print " - the URL of the Server where the messages will be saved."
+    print
+    config.add_section('global')
+    host = get_host()
+    config.set('global', 'host', host)
+    server = get_server()
+    config.set('global', 'server', server)
+    key = get_key(server, host)
+    config.set('global', 'key', key)
+    with open(config_path, 'wb') as configfile:
+        config.write(configfile)
+    print
+    print "Configuration success"
+    print "You can change the configuration on '~/.recho.conf'"
+    print
+    print "To store MESSAGES"
+    print "$ recho -m \"my message\""
+    print
+    exit()
+
+
+def show_status(details):
     params = urllib.urlencode({'key': key})
     try:
         f = urllib.urlopen(server + "/status?%s" % params)
         response = json.loads(f.read())
-        print bcolors.OKGREEN + bcolors.BOLD + "Last Messages" + bcolors.ENDC
+        print "Last messages:"
         for message in response:
-            print message.get('datetime') + " " + bcolors.OKGREEN + message.get(
-                'user') + bcolors.ENDC + " " + message.get(
-                'message')
+            id = ""
+            if details:
+                id = message.get('_id') + " "
+            print id + message.get('datetime') + " " + message.get('user') + " " + message.get('message')
     except:
-        print bcolors.FAIL + bcolors.BOLD + "Error retrieving the Information" + bcolors.ENDC
+        print "error: retrieving data"
 
 
-def get_info():
-    print bcolors.OKGREEN + bcolors.BOLD + "Configuration" + bcolors.ENDC
+def show_config():
+    print "Configuration:"
     print "server : " + server
     print "key    : " + key
     print "host   : " + host
-    print "color  : " + color
 
 
-def do_delete():
-    confirmation = raw_input("Are you sure [yes]: ")
+def restart_config():
+    confirmation = raw_input("are you sure restart the configuration [yes] ?: ")
     if confirmation == "yes":
         os.remove(config_path)
-        print "Configuration deleted"
+        print "configuration restarted"
     else:
-        print "Operation canceled"
+        print "operation canceled"
+
+
+def delete_message(id):
+    params = urllib.urlencode({'key': key, 'id': id})
+    try:
+        f = urllib.urlopen(server + "/delete?%s" % params)
+        response = json.loads(f.read())
+        if response.get('status') == 'success':
+            print "message deleted"
+        else:
+            print  "error: deleting the message"
+    except:
+        print  "error: deleting the message"
 
 
 def send_message(message):
@@ -90,69 +105,55 @@ def send_message(message):
         f = urllib.urlopen(server + "/message?%s" % params)
         response = json.loads(f.read())
         if response.get('_id'):
-            print bcolors.OKGREEN + bcolors.BOLD + "Message Saved > " + bcolors.ENDC + response.get('message')
+            print "message saved > " + response.get('message')
         else:
-            print bcolors.FAIL + bcolors.BOLD + "Invalid Key" + bcolors.ENDC
+            print "error: invalid key"
     except:
-        print bcolors.FAIL + bcolors.BOLD + "Error saving the Message" + bcolors.ENDC
+        print  "error: saving the message"
 
 
 if __name__ == "__main__":
 
-    option_parser = OptionParser()
-    opts, args = option_parser.parse_args()
-
     config_path = os.path.expanduser("~") + '/.recho.conf'
-
     config = ConfigParser.RawConfigParser()
     config.read(config_path)
-
-    bcolors = BColors(True)
 
     try:
         server = config.get('global', 'server')
         key = config.get('global', 'key')
         host = config.get('global', 'host')
-        color = config.get('global', 'color')
-        bcolors = BColors(color)
     except:
-        print bcolors.OKBLUE + bcolors.BOLD + "Welcome to RECHO" + bcolors.ENDC
-        print "Before anything you need define :"
-        print " - The URL of the Server where the messages will be saved."
-        print
-        config.add_section('global')
-        host = get_host()
-        config.set('global', 'host', host)
-        server = get_server()
-        config.set('global', 'server', server)
-        key = get_key()
-        config.set('global', 'key', key)
-        config.set('global', 'color', True)
-        with open(config_path, 'wb') as configfile:
-            config.write(configfile)
-        print
-        print bcolors.OKGREEN + bcolors.BOLD + "Configuration Success" + bcolors.ENDC
-        print "You can change the configuration on '~/.recho.conf'"
-        print
-        exit()
+        show_wizard()
 
-    if len(args) > 0:
-        if args[0] == 'status':
-            get_status()
-        elif args[0] == 'info':
-            get_info()
-        elif args[0] == 'delete':
-            do_delete()
-        else:
-            send_message(args[0])
+    parser = argparse.ArgumentParser(description="Light CLI system to store MESSAGES.",
+                                     version="0.1", usage="%(prog)s [options] -m MESSAGE")
+
+    message = parser.add_argument_group('message')
+    message.add_argument('-m', '--message', action="store", help="store message")
+    message.add_argument('-d', '--delete', action="store", help="delete message by id", metavar="MESSAGE_ID")
+
+    status = parser.add_argument_group('status')
+    status.add_argument('-s', '--status', action="store_true", default=False, help="show status from the server")
+    status.add_argument('-S', '--status-more', action="store_true", default=False, help="verbose status")
+
+    config = parser.add_argument_group('configuration')
+    config.add_argument('-c', '--config', action="store_true", default=False, help="show configuration")
+    config.add_argument('-r', '--restart', action="store_true", default=False, help="restart configuration")
+
+    args = parser.parse_args()
+
+    if args.config:
+        show_config()
+    elif args.restart:
+        restart_config()
+    elif args.status:
+        show_status(False)
+    elif args.status_more:
+        show_status(True)
+    elif args.delete:
+        delete_message(args.delete)
     else:
-        print bcolors.FAIL + bcolors.BOLD + "The message is required" + bcolors.ENDC
-        print "Syntax:"
-        print "    $ recho \"[message]\""
-        print "Reserved Messages:"
-        print "    $ recho status"
-        print "         (Get status from the server)"
-        print "    $ recho info"
-        print "         (Show the configuration)"
-        print "    $ recho delete"
-        print "         (Delete the configuration)"
+        if args.message:
+            send_message(args.message)
+        else:
+            parser.print_help()
