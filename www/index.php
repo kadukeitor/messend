@@ -11,67 +11,6 @@
 
 	$f3->route( 'GET /',
 		/**
-		 * Main
-		 *
-		 * @param Base $f3
-		 */
-		function ( \Base $f3 ) {
-			echo "<code>recho</code>";
-		}
-	);
-
-	$f3->route( 'GET /login',
-		/**
-		 * Login
-		 *
-		 * @param Base $f3
-		 */
-		function ( \Base $f3 ) {
-			echo \Template::instance()->render( 'page-login.html' );
-		}
-	);
-
-	$f3->route( 'POST /check_login',
-		/**
-		 * Login
-		 *
-		 * @param Base $f3
-		 */
-		function ( \Base $f3 ) {
-
-			$post = $f3->get( 'POST' );
-			$f3->scrub( $post );
-
-			$key = strtolower( $post['key'] );
-
-			// Session's Mapper
-			$sessions = new DB\Jig\Mapper( $f3->get( 'DB' ), 'sessions' );
-
-			// Checking Key
-			if ( $sessions->load( array( '@_id=?', $key ) ) ) {
-				$f3->set( 'SESSION.key', $key );
-				$f3->reroute( '/dashboard' );
-			} else {
-				$f3->reroute( '/login?' . http_build_query( array( 'error' => base64_encode( "Bad Key" ) ) ) );
-			}
-
-		}
-	);
-
-	$f3->route( 'GET /logout',
-		/**
-		 * Logout
-		 *
-		 * @param Base $f3
-		 */
-		function ( \Base $f3 ) {
-			$f3->clear( 'SESSION' );
-			$f3->reroute( '/login' );
-		}
-	);
-
-	$f3->route( 'GET /dashboard',
-		/**
 		 * Dashboard
 		 *
 		 * @param Base $f3
@@ -79,7 +18,7 @@
 		function ( \Base $f3 ) {
 
 			if ( ! $f3->exists( 'SESSION.key' ) ) {
-				$f3->reroute( '/login?' . http_build_query( array( 'error' => base64_encode( "Bad Permissions" ) ) ) );
+				$f3->reroute( '/login' );
 			}
 
 			$key = $f3->get( 'SESSION.key' );
@@ -124,6 +63,56 @@
 			$f3->set( 'messages_server', $messages_server );
 
 			echo \Template::instance()->render( 'page-dashboard.html' );
+		}
+	);
+
+	$f3->route( 'GET /login',
+		/**
+		 * Login
+		 *
+		 * @param Base $f3
+		 */
+		function ( \Base $f3 ) {
+			echo \Template::instance()->render( 'page-login.html' );
+		}
+	);
+
+	$f3->route( 'POST /check_login',
+		/**
+		 * Check Login
+		 *
+		 * @param Base $f3
+		 */
+		function ( \Base $f3 ) {
+
+			$post = $f3->get( 'POST' );
+			$f3->scrub( $post );
+
+			$key = strtolower( $post['key'] );
+
+			// Session's Mapper
+			$sessions = new DB\Jig\Mapper( $f3->get( 'DB' ), 'sessions' );
+
+			// Checking Key
+			if ( $sessions->load( array( '@_id=?', $key ) ) ) {
+				$f3->set( 'SESSION.key', $key );
+				$f3->reroute( '/' );
+			} else {
+				$f3->reroute( '/login?' . http_build_query( array( 'error' => base64_encode( "Bad Key" ) ) ) );
+			}
+
+		}
+	);
+
+	$f3->route( 'GET /logout',
+		/**
+		 * Logout
+		 *
+		 * @param Base $f3
+		 */
+		function ( \Base $f3 ) {
+			$f3->clear( 'SESSION' );
+			$f3->reroute( '/login' );
 		}
 	);
 
