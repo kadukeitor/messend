@@ -82,7 +82,7 @@
 				$f3->reroute( '/login?' . http_build_query( array( 'error' => base64_encode( "Bad Permissions" ) ) ) );
 			}
 
-			$key = $f3->exists( 'SESSION.key' );
+			$key = $f3->get( 'SESSION.key' );
 
 			// Session's Mapper
 			$sessions = new DB\Jig\Mapper( $f3->get( 'DB' ), 'sessions' );
@@ -119,6 +119,8 @@
 				unset( $message->session );
 				$messages_server[] = $message->cast();
 			}
+
+			print_r($messages_server);
 
 			$f3->set( 'messages_user', $messages_user );
 			$f3->set( 'messages_server', $messages_server );

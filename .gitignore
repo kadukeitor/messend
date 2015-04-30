@@ -1,4 +1,5 @@
 .idea
+www/data/temp
 www/data/db
 www/data/cache
 www/data/errors.log
