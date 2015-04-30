@@ -1,0 +1,17 @@
+{
+  "name": "recho",
+  "version": "0.1.0",
+  "description": "Light CLI system to store MESSAGES.",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "**/.*",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material": "https://github.com/Daemonite/material.git"
+  }
+}

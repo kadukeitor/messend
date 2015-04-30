@@ -1,0 +1,14 @@
+{
+  "name": "material",
+  "homepage": "https://github.com/Daemonite/material",
+  "_release": "5dd74e8e33",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "5dd74e8e33f7439fe6818723432672d4f22ad103"
+  },
+  "_source": "https://github.com/Daemonite/material.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/Daemonite/material.git",
+  "_direct": true
+}
