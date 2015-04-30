@@ -120,8 +120,6 @@
 				$messages_server[] = $message->cast();
 			}
 
-			print_r($messages_server);
-
 			$f3->set( 'messages_user', $messages_user );
 			$f3->set( 'messages_server', $messages_server );
 
