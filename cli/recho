@@ -24,7 +24,12 @@ def get_key(server, host):
     try:
         f = urllib.urlopen(server + "/register?%s" % params)
         response = json.loads(f.read())
-        return response.get('_id')
+        if response.get('_id'):
+            return response.get('_id')
+        else:
+            print
+            print "error: invalid key"
+            exit()
     except:
         print
         print "error: invalid server"

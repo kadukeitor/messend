@@ -2,17 +2,17 @@
 
 Light CLI system to store MESSAGES.
 
-## CLI
+## cli
 
 To install copy the `recho` file to `/usr/bin`.
 
 The config is located on `~/.recho.conf`
 
-### Use
+### sample
 
 Simply  `$ recho -m "Installing Apache2"`
 
-## WWW
+## www
 
 Check if the module `rewrite` of the Apache2 is enabled.
 
